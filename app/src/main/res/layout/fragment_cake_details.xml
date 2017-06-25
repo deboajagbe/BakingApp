@@ -1,0 +1,59 @@
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white"
+        android:orientation="vertical">
+
+
+        <TextView
+            android:id="@+id/header"
+            android:layout_marginTop="16dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="10dp"
+            android:textStyle="bold"
+            android:textSize="20sp"
+            android:text="Ingredients Lists : "/>
+
+
+        <TextView
+            android:id="@+id/cakeTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/titleText"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="4dp"
+            android:textSize="14sp"
+            tools:text ="salt (1.5 TSP)"/>
+
+
+        <TextView
+            android:id="@+id/stepHeader"
+            android:layout_marginTop="4dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="10dp"
+            android:textStyle="bold"
+            android:textSize="20sp"
+            android:text="Steps : "/>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/step_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/priLight"
+            android:elevation="@dimen/elevate"
+            android:layout_margin ="4dp" />
+
+
+    </LinearLayout>
+
+</ScrollView>
