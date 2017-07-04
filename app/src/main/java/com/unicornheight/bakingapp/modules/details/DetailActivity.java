@@ -9,10 +9,6 @@ import android.view.View;
 
 import com.unicornheight.bakingapp.R;
 import com.unicornheight.bakingapp.base.BaseActivity;
-import com.unicornheight.bakingapp.modules.details.adapter.StepAdapter;
-import com.unicornheight.bakingapp.modules.player.CakePlayer;
-import com.unicornheight.bakingapp.modules.player.PlayerFragment;
-import com.unicornheight.bakingapp.mvp.model.CakesResponseSteps;
 
 public class DetailActivity extends BaseActivity {
 

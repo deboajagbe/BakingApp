@@ -10,7 +10,7 @@ public class CakesResponseIngredients implements java.io.Serializable {
         return this.quantity;
     }
 
-    public void setQuantity(int quantity) {
+    public void setQuantity(double quantity) {
         this.quantity = quantity;
     }
 

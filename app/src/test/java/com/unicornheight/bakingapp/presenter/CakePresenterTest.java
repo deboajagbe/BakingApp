@@ -4,8 +4,10 @@ import android.os.Looper;
 
 import com.unicornheight.bakingapp.api.CakeApiService;
 import com.unicornheight.bakingapp.mapper.CakeMapper;
+import com.unicornheight.bakingapp.modules.home.SimpleIdlingResource;
 import com.unicornheight.bakingapp.mvp.model.Cake;
 import com.unicornheight.bakingapp.mvp.model.CakesResponse;
+import com.unicornheight.bakingapp.mvp.model.CakesResponseIngredients;
 import com.unicornheight.bakingapp.mvp.model.Storage;
 import com.unicornheight.bakingapp.mvp.presenter.CakePresenter;
 import com.unicornheight.bakingapp.mvp.view.MainView;
@@ -19,11 +21,14 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Matchers;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import rx.Observable;
 import rx.Scheduler;
@@ -53,7 +58,9 @@ public class CakePresenterTest {
     @Mock private CakeMapper mCakeMapper;
     @Mock private Storage mStorage;
     @Mock private MainView mView;
-    @Mock private Observable<CakesResponse> mObservable;
+    @Mock
+    private Observable<List<CakesResponse>> mObservable;
+    SimpleIdlingResource resource;
 
     @Captor
     private ArgumentCaptor<Subscriber<CakesResponse>> captor;
@@ -82,13 +89,13 @@ public class CakePresenterTest {
     @Test
     public void getCakes() throws Exception {
         PowerMockito.mockStatic(Looper.class);
-        when(AndroidSchedulers.mainThread()).thenReturn(mRxJavaSchedulersHook.getComputationScheduler());
+        Mockito.when(AndroidSchedulers.mainThread()).thenReturn(mRxJavaSchedulersHook.getComputationScheduler());
 
-      //  when(mApiService.getCakes()).thenReturn(mObservable);
+        Mockito.when(mApiService.getCakes()).thenReturn(mObservable);
         //        when(observable.subscribeOn(Schedulers.newThread())).thenReturn(observable);
         //        when(observable.observeOn(AndroidSchedulers.mainThread())).thenReturn(observable);
 
-        presenter.getCakes();
+        presenter.getCakes(resource);
         verify(mView, atLeastOnce()).onShowDialog("Loading cakes....");
     }
 
@@ -108,12 +115,14 @@ public class CakePresenterTest {
 
     @Test
     public void onNext() throws Exception {
-//        CakesResponse response = mock(CakesResponse.class);
-//       // CakesResponseIngredients[] responseCakes = new CakesResponseIngredients[][1];
-//      //  when(response.getCakes()).thenReturn(responseCakes);
-//        presenter.onNext(response);
-//
-//        verify(mCakeMapper, times(1)).mapCakes(mStorage, response);
+
+        CakesResponse response = mock(CakesResponse.class);
+        CakesResponseIngredients[] responseCakes = new CakesResponseIngredients[1];
+        Mockito.when(response.getIngredients()).thenReturn(Arrays.asList(responseCakes));
+        presenter.onNext((List<CakesResponse>) response);
+
+
+        verify(mCakeMapper, times(1)).mapCakes(mStorage, (List<CakesResponse>) response);
         verify(mView, times(1)).onClearItems();
         verify(mView, times(1)).onCakeLoaded(Matchers.anyList());
     }

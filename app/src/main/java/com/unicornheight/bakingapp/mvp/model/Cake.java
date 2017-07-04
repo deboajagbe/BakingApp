@@ -7,12 +7,13 @@ import java.util.List;
 
 public class Cake implements Serializable {
 
+    private int id;
     private String image;
     private int servings;
     private String name;
-    private List<CakesResponseIngredients> ingredients;
-    private int id;
     private List<CakesResponseSteps> steps;
+    private List<CakesResponseIngredients> ingredients;
+
 
     public String getImage() {
         return this.image;
@@ -61,4 +62,5 @@ public class Cake implements Serializable {
     public void setSteps(List<CakesResponseSteps> steps) {
         this.steps = steps;
     }
+
 }

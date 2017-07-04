@@ -23,7 +23,7 @@
         <activity android:name=".modules.details.DetailActivity" />
         <activity android:name=".modules.player.CakePlayer" />
 
-        <receiver android:name=".modules.widget.CakeWidget">
+        <receiver android:name=".modules.widget.CakeWidgetProvider">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
@@ -32,6 +32,9 @@
                 android:name="android.appwidget.provider"
                 android:resource="@xml/cake_widget_info" />
         </receiver>
+        <service
+            android:name=".modules.widget.CakeWidget"
+            android:permission="android.permission.BIND_REMOTEVIEWS" />
     </application>
 
 </manifest>

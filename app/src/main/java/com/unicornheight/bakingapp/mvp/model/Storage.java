@@ -1,18 +1,3 @@
-/*
- * Copyright (c) 2016 Filippo Engidashet
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *  http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 
 package com.unicornheight.bakingapp.mvp.model;
 
@@ -54,16 +39,21 @@ public class Storage extends SQLiteOpenHelper {
     }
 
     public void addCake(Cake cake) {
+        List<CakesResponseIngredients> cakesResponseIngredients = cake.getIngredients();
         SQLiteDatabase db = this.getWritableDatabase();
-
         ContentValues values = new ContentValues();
+        values.put(ID, cake.getId());
         values.put(TITLE, cake.getName());
-        values.put(PREVIEW_DESCRIPTION, cake.getServings());
-        values.put(DETAIL_DESCRIPTION, String.valueOf(cake.getIngredients()));
+        values.put(SERVINGS, cake.getServings());
         values.put(IMAGE_URL, cake.getImage());
+        for (CakesResponseIngredients cakes : cakesResponseIngredients) {
+            values.put(MEASURE, cakes.getMeasure());
+            values.put(QUANTITY, cakes.getQuantity());
+            values.put(INGREDIENT, cakes.getIngredient());
+        }
 
         try {
-            db.insert(TABLE_NAME, null, values);
+            db.insertWithOnConflict(TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE);
         } catch(SQLException e) {
             Log.d(TAG, e.getMessage());
         }
@@ -82,17 +72,30 @@ public class Storage extends SQLiteOpenHelper {
                     if (cursor.moveToFirst()) {
                         do {
                             Cake cake = new Cake();
+                            CakesResponseIngredients cakesResponseIngredients = new CakesResponseIngredients();
                             cake.setName(cursor.getString(cursor.getColumnIndex(TITLE)));
-                            cake.setServings(Integer.parseInt(cursor.getString(cursor.getColumnIndex(PREVIEW_DESCRIPTION))));
-                          //  cake.setIngredients(cursor.getString(cursor.getColumnIndex(DETAIL_DESCRIPTION)));
+                            cake.setServings(cursor.getInt(cursor.getColumnIndex(SERVINGS)));
+                            cakesResponseIngredients.setMeasure(cursor.getString(cursor.getColumnIndex(MEASURE)));
+                            cakesResponseIngredients.setQuantity(cursor.getInt(cursor.getColumnIndex(QUANTITY)));
+                            cakesResponseIngredients.setIngredient(cursor.getString(cursor.getColumnIndex(INGREDIENT)));
+                            List<CakesResponseIngredients> cakeIngredientList = new ArrayList<>();
+                            cakeIngredientList.add(cakesResponseIngredients);
+                            cake.setIngredients(cakeIngredientList);
+//                            cake.setIngredients(cursor.getString(cursor.getColumnIndex(INGREDIENT)));
+//                            cake.setSteps(cursor.getString(cursor.getColumnIndex(STEPS)));
+//                            cakesResponseIngredients.setQuantity(Integer.parseInt(cursor.getString(cursor.getColumnIndex(QUANTITY))));
+//                            cakesResponseSteps.setVideoURL(cursor.getString(cursor.getColumnIndex(VIDEO_URL)));
+//                            cakesResponseSteps.setThumbnailURL(cursor.getString(cursor.getColumnIndex(THUMBNAIL_URL)));
+//                            cakesResponseSteps.setShortDescription(cursor.getString(cursor.getColumnIndex(SHORT_DESCRIPTION)));
+//                            cakesResponseSteps.setDescription(cursor.getString(cursor.getColumnIndex(DESCRIPTION)));
                             cake.setImage(cursor.getString(cursor.getColumnIndex(IMAGE_URL)));
-
                             cakeList.add(cake);
 
                         } while (cursor.moveToNext());
                     }
                 }
             }
+            cursor.close();
         } catch (SQLException e) {
             Log.d(TAG, e.getMessage());
         }
@@ -101,18 +104,21 @@ public class Storage extends SQLiteOpenHelper {
 
     private static final String ID = "id";
     private static final String TITLE = "title";
-    private static final String PREVIEW_DESCRIPTION = "previewDescription";
-    private static final String DETAIL_DESCRIPTION = "detailDescription";
+    private static final String SERVINGS = "servings";
+    private static final String MEASURE = "measure";
+    private static final String QUANTITY = "description";
+    private static final String INGREDIENT = "ingredient";
     private static final String IMAGE_URL = "imageUrl";
     private static final String TABLE_NAME = "cakes";
-
     private static final String DROP_TABLE = "DROP TABLE IF EXISTS " + TABLE_NAME;
     private static final String SELECT_QUERY = "SELECT * FROM " + TABLE_NAME;
 
     public static final String CREATE_TABLE = "create table " + TABLE_NAME + "(" +
             ID + " integer primary key autoincrement not null," +
             TITLE + " text not null," +
-            PREVIEW_DESCRIPTION + " text not null," +
-            DETAIL_DESCRIPTION + " text not null," +
+            SERVINGS + " text not null," +
+            MEASURE + " text not null," +
+            INGREDIENT + " text not null," +
+            QUANTITY + " text not null," +
             IMAGE_URL + " text not null)";
 }

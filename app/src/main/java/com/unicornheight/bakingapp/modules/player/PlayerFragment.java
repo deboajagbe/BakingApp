@@ -41,7 +41,7 @@ public class PlayerFragment extends Fragment {
     private String cakeVideoUrl;
     private String cakeDetail;
     private String thumbUrl;
-    private SimpleExoPlayer mExoPlayer;
+    public SimpleExoPlayer mExoPlayer;
 
 
     public PlayerFragment() {
@@ -83,8 +83,8 @@ public class PlayerFragment extends Fragment {
         return rootView;
     }
 
-    private void initializePlayer(Uri mediaUri) {
-        if(mediaUri != null) {
+    public void initializePlayer(Uri mediaUri) {
+        if (mediaUri != null) {
             if (mExoPlayer == null) {
                 // Create an instance of the ExoPlayer.
                 TrackSelector trackSelector = new DefaultTrackSelector();
@@ -102,20 +102,6 @@ public class PlayerFragment extends Fragment {
                 mExoPlayer.setPlayWhenReady(true);
             }
         }
-
     }
 
-    private void releasePlayer() {
-        mExoPlayer.stop();
-        mExoPlayer.release();
-        mExoPlayer = null;
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        if (mExoPlayer != null) {
-            releasePlayer();
-        }
-    }
 }

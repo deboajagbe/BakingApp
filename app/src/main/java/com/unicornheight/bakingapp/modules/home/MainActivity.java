@@ -7,6 +7,9 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -23,11 +26,12 @@ import com.unicornheight.bakingapp.di.module.CakeModule;
 import com.unicornheight.bakingapp.modules.details.DetailActivity;
 import com.unicornheight.bakingapp.modules.details.ListItemDetailFragment;
 import com.unicornheight.bakingapp.modules.home.adapter.CakeAdapter;
-import com.unicornheight.bakingapp.modules.player.PlayerFragment;
 import com.unicornheight.bakingapp.mvp.model.Cake;
 import com.unicornheight.bakingapp.mvp.presenter.CakePresenter;
 import com.unicornheight.bakingapp.mvp.view.MainView;
 import com.unicornheight.bakingapp.utilities.NetworkUtils;
+
+import android.support.test.espresso.IdlingResource;
 
 import java.util.List;
 
@@ -41,10 +45,14 @@ public class MainActivity extends BaseActivity implements MainView {
     @Inject protected CakePresenter mPresenter;
     private CakeAdapter mCakeAdapter;
     private boolean mTwoPane;
+    @Nullable
+    private SimpleIdlingResource mIdlingResource;
+
 
     @Override
     protected void onViewReady(Bundle savedInstanceState, Intent intent) {
         super.onViewReady(savedInstanceState, intent);
+        getIdlingResource();
         if (findViewById(R.id.listitem_detail_container) != null) {
             // The detail container view will be present only in the
             // large-screen layouts (res/values-w900dp).
@@ -54,11 +62,12 @@ public class MainActivity extends BaseActivity implements MainView {
         }
         initializeList();
         loadCakes();
+
     }
 
     private void loadCakes() {
         if(NetworkUtils.isNetAvailable(this)) {
-            mPresenter.getCakes();
+            mPresenter.getCakes(mIdlingResource);
         } else {
             mPresenter.getCakesFromDatabase();
         }
@@ -129,7 +138,11 @@ public class MainActivity extends BaseActivity implements MainView {
 
     @Override
     public void onCakeLoaded(List<Cake> cakes) {
-        mCakeAdapter.addCakes(cakes);
+        if (cakes != null) {
+            mCakeAdapter.addCakes(cakes);
+        } else {
+            mPresenter.getCakesFromDatabase();
+        }
     }
 
     @Override
@@ -151,6 +164,16 @@ public class MainActivity extends BaseActivity implements MainView {
     public void onClearItems() {
         mCakeAdapter.clearCakes();
     }
+
+    @VisibleForTesting
+    @NonNull
+    public IdlingResource getIdlingResource() {
+        if (mIdlingResource == null) {
+            mIdlingResource = new SimpleIdlingResource();
+        }
+        return mIdlingResource;
+    }
+
 
     private CakeAdapter.OnCakeClickListener mCakeClickListener = new CakeAdapter.OnCakeClickListener() {
         @Override

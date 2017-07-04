@@ -31,8 +31,10 @@ public class ListItemDetailFragment extends Fragment {
 
     //this should call the recipe data so you can send data
     private StepAdapter mStepAdapter;
-    @Bind(R.id.cakeTitle) protected TextView mCakeTitle;
-    @Bind(R.id.step_list) protected RecyclerView mStepList;
+    @Bind(R.id.cakeTitle)
+    protected TextView mCakeTitle;
+    @Bind(R.id.step_list)
+    protected RecyclerView mStepList;
     Cake cake;
     private int cake_id;
     private String cakeName;
@@ -56,7 +58,7 @@ public class ListItemDetailFragment extends Fragment {
             // Load the content specified by the player_fragment
             // arguments. In a real-world scenario, use a Loader
             cake = (Cake) getArguments().getSerializable(DetailActivity.CAKE);
-            cake_id = cake.getId();
+            // cake_id = cake.getId();
             cakeName = cake.getName();
             image_url = cake.getImage();
             Ingredients = cake.getIngredients();
@@ -75,7 +77,7 @@ public class ListItemDetailFragment extends Fragment {
         initializeList();
 
         if (Ingredients != null) {
-            for (CakesResponseIngredients ingredients :  Ingredients) {
+            for (CakesResponseIngredients ingredients : Ingredients) {
                 String cakeIngredient = ingredients.getIngredient();
                 String cakeQuantity = String.valueOf(ingredients.getQuantity());
                 String cakeMeasure = String.valueOf(ingredients.getMeasure());
@@ -84,7 +86,7 @@ public class ListItemDetailFragment extends Fragment {
         }
         mStepAdapter.addCakes(steps);
         return rootView;
-        }
+    }
 
 
     private void initializeList() {
@@ -94,7 +96,8 @@ public class ListItemDetailFragment extends Fragment {
         mStepAdapter.setCakeClickListener(mCakeClickListener);
         mStepList.setAdapter(mStepAdapter);
     }
-        private StepAdapter.OnCakeClickListener mCakeClickListener = new StepAdapter.OnCakeClickListener() {
+
+    private StepAdapter.OnCakeClickListener mCakeClickListener = new StepAdapter.OnCakeClickListener() {
         @Override
         public void onClick(View v, CakesResponseSteps cake, int position) {
             Intent intent = new Intent(getContext(), CakePlayer.class);
@@ -102,6 +105,4 @@ public class ListItemDetailFragment extends Fragment {
             startActivity(intent);
         }
     };
-
-
 }

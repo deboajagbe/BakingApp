@@ -83,8 +83,6 @@ public class CakeAdapter extends RecyclerView.Adapter<CakeAdapter.Holder> {
             if(cake.getImage() != null && !cake.getImage().isEmpty() && !cake.getImage().equals("")) {
                 Glide.with(mContext).load(cake.getImage())
                         .diskCacheStrategy(DiskCacheStrategy.SOURCE)
-//                    .placeholder(R.drawable.empty)
-//                    .error(R.drawable.empty)
                         .into(new ImageHandler(mCakeIcon));
 
             }else{

@@ -10,6 +10,7 @@ import com.unicornheight.bakingapp.base.BaseActivity;
 public class CakePlayer extends BaseActivity {
 
     public static final String CAKE = "cake";
+    PlayerFragment fragment;
 
     @Override
     protected void onViewReady(Bundle savedInstanceState, Intent intent) {
@@ -21,12 +22,12 @@ public class CakePlayer extends BaseActivity {
             // using a player_fragment transaction.
             Bundle arguments = new Bundle();
             Intent parentIntent = getIntent();
+            fragment = new PlayerFragment();
 
             if(parentIntent.hasExtra(CakePlayer.CAKE)){
                 arguments.putSerializable(CakePlayer.CAKE, parentIntent.getSerializableExtra(CakePlayer.CAKE));
             }
 
-            PlayerFragment fragment = new  PlayerFragment();
             fragment.setArguments(arguments);
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.player_container, fragment)
@@ -50,4 +51,17 @@ public class CakePlayer extends BaseActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (fragment.mExoPlayer != null) {
+            releasePlayer();
+        }
+    }
+
+    public void releasePlayer() {
+        fragment.mExoPlayer.stop();
+        fragment.mExoPlayer.release();
+        fragment.mExoPlayer = null;
+    }
 }
