@@ -1,6 +1,7 @@
 package com.unicornheight.bakingapp.modules.player;
 
 
+import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -10,6 +11,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.LoadControl;
@@ -23,6 +26,7 @@ import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 import com.unicornheight.bakingapp.R;
+import com.unicornheight.bakingapp.helper.ImageHandler;
 import com.unicornheight.bakingapp.mvp.model.CakesResponseSteps;
 
 import butterknife.Bind;
@@ -45,6 +49,7 @@ public class PlayerFragment extends Fragment {
 
 
     public PlayerFragment() {
+
     }
 
 
@@ -53,8 +58,6 @@ public class PlayerFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         if (getArguments() != null) {
-            // Load the content specified by the player_fragment
-            // arguments. In a real-world scenario, use a Loader
             steps = (CakesResponseSteps) getArguments().getSerializable(CakePlayer.CAKE);
             cakeVideoUrl = steps.getVideoURL();
             cakeDetail = steps.getDescription();
@@ -69,31 +72,33 @@ public class PlayerFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.player_fragment, container, false);
         ButterKnife.bind(this, rootView);
-        if (cakeVideoUrl != null && !cakeVideoUrl.equals("") && !cakeVideoUrl.isEmpty()) {
-            mPlayerView.setVisibility(View.VISIBLE);
-            initializePlayer(Uri.parse(cakeVideoUrl));
-        }else if(thumbUrl != null && !thumbUrl.equals("") && !thumbUrl.isEmpty()){
-            mPlayerView.setVisibility(View.VISIBLE);
-            initializePlayer(Uri.parse(thumbUrl));
-        }else {
-            mImageView.setImageResource(R.drawable.temp);
-        }
         mDetails.setText(cakeDetail);
 
         return rootView;
     }
 
-    public void initializePlayer(Uri mediaUri) {
+    public void initializePlayer() {
+        Uri mediaUri = null;
+        if (cakeVideoUrl != null && !cakeVideoUrl.equals("") && !cakeVideoUrl.isEmpty()) {
+            mPlayerView.setVisibility(View.VISIBLE);
+            mediaUri = Uri.parse(cakeVideoUrl);
+        }else if(thumbUrl != null && !thumbUrl.equals("") && !thumbUrl.isEmpty()){
+            Glide.with(getActivity()).load(thumbUrl)
+                    .asBitmap()
+                    .thumbnail(0.5f)
+                    .diskCacheStrategy(DiskCacheStrategy.SOURCE)
+                    .placeholder(R.drawable.temp)
+                    .into((mImageView));
+        }else {
+            mImageView.setImageResource(R.drawable.temp);
+        }
         if (mediaUri != null) {
             if (mExoPlayer == null) {
-                // Create an instance of the ExoPlayer.
                 TrackSelector trackSelector = new DefaultTrackSelector();
                 LoadControl loadControl = new DefaultLoadControl();
                 mExoPlayer = ExoPlayerFactory.newSimpleInstance(getContext(), trackSelector, loadControl);
                 mPlayerView.setPlayer(mExoPlayer);
 
-
-                // Prepare the MediaSource.
                 String userAgent = Util.getUserAgent(getContext(), "Steps :");
                 MediaSource mediaSource = new ExtractorMediaSource(mediaUri, new DefaultDataSourceFactory(
                         getContext(), userAgent), new DefaultExtractorsFactory(), null, null);

@@ -46,6 +46,7 @@ public class CakeMapper {
                         CakesResponseSteps myCakeStep = new CakesResponseSteps();
                         myCakeStep.setDescription(cakeStepIngredient.getDescription());
                         myCakeStep.setVideoURL(cakeStepIngredient.getVideoURL());
+                        myCakeStep.setThumbnailURL(cakeStepIngredient.getThumbnailURL());
                         myCakeStep.setShortDescription(cakeStepIngredient.getShortDescription());
                         cakeStepList.add(myCakeStep);
                     }

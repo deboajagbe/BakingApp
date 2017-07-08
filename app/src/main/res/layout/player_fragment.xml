@@ -46,13 +46,13 @@
     <TextView
         android:id="@+id/full_detail"
         android:layout_width="match_parent"
-        android:layout_margin="16dp"
+        android:layout_margin="@dimen/fab_margin"
         android:textSize="18sp"
         app:layout_constraintLeft_toLeftOf="parent"
         android:layout_height="wrap_content"
         tools:text="Hello World"
         tools:layout_editor_absoluteY="0dp"
-        tools:layout_editor_absoluteX="8dp" />
+        tools:layout_editor_absoluteX="@dimen/elevate" />
 
     </LinearLayout>
 

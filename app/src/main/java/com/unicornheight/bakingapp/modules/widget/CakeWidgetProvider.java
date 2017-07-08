@@ -3,13 +3,14 @@ package com.unicornheight.bakingapp.modules.widget;
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
 import android.widget.RemoteViews;
-
 import com.unicornheight.bakingapp.R;
 import com.unicornheight.bakingapp.modules.details.DetailActivity;
 import com.unicornheight.bakingapp.modules.home.MainActivity;
@@ -24,24 +25,41 @@ import java.util.List;
 
 public class CakeWidgetProvider extends AppWidgetProvider {
 
+
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     static void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
                                 int appWidgetId) {
-        // Construct the RemoteViews object
-        RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.cake_widget);
         List<Cake> widgetList;
         Storage storage = new Storage(context);
+        RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.cake_widget);
+        SharedPreferences sharedPreferences = context.getSharedPreferences(context.getString(R.string.pref_name), 0);
+        if (sharedPreferences.contains(context.getString(R.string.pref_key))) {
+            String cakeName = sharedPreferences.getString(context.getString(R.string.pref_key), "");
+            String cakeIngredient = sharedPreferences.getString(context.getString(R.string.pref_ingredient), "");
 
-        widgetList = storage.getSavedCakes();
-        if (widgetList != null) {
-            views.setTextViewText(R.id.widget_cake_name, context.getString(R.string.app_name));
+            views.setTextViewText(R.id.widget_cake_name, cakeName);
             views.setImageViewResource(R.id.widget_image,
                     R.drawable.empty);
+            views.setTextViewText(R.id.widget_ingredient, cakeIngredient);
+
+
             Intent intent = new Intent(context, MainActivity.class);
             PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
             views.setOnClickPendingIntent(R.id.widget_image, pendingIntent);
             appWidgetManager.updateAppWidget(appWidgetId, views);
 
+        } else {
+            widgetList = storage.getSavedCakes();
+            if (widgetList != null) {
+                views.setTextViewText(R.id.widget_cake_name, context.getString(R.string.app_name));
+                views.setImageViewResource(R.id.widget_image,
+                        R.drawable.empty);
+                Intent intent = new Intent(context, MainActivity.class);
+                PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+                views.setOnClickPendingIntent(R.id.widget_image, pendingIntent);
+                appWidgetManager.updateAppWidget(appWidgetId, views);
+
+            }
         }
 
     }
@@ -73,37 +91,16 @@ public class CakeWidgetProvider extends AppWidgetProvider {
         super.onDisabled(context);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     @Override
     public void onReceive(Context context, Intent intent) {
         super.onReceive(context, intent);
-    }
-
-    private static RemoteViews gridRemoteView(Context context) {
-        List<Cake> widgetList;
-        Storage storage = new Storage(context);
-        RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_grid_view);
-
-        widgetList = storage.getSavedCakes();
-        if (widgetList != null) {
-            for (Cake cake : widgetList) {
-                views.setTextViewText(R.id.widget_cake_name, cake.getName());
-                views.setImageViewResource(R.id.widget_image,
-                        R.drawable.empty);
-                // Set the cakeWidget intent to act as the adapter for the GridView
-                Intent intent = new Intent(context, CakeWidget.class);
-                views.setRemoteAdapter(R.id.widget_grid_view, intent);
-                // Set the DetailActivity intent to launch when clicked
-                Intent appIntent = new Intent(context, DetailActivity.class);
-
-
-                PendingIntent appPendingIntent = PendingIntent.getActivity(context, 0, appIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-                views.setPendingIntentTemplate(R.id.widget_grid_view, appPendingIntent);
-                //  views.setOnClickPendingIntent(R.id.widget_image, appPendingIntent);
-                // Handle empty gardens
-                views.setEmptyView(R.id.widget_grid_view, R.id.empty_view);
-
+        Bundle extras = intent.getExtras();
+        if (extras != null) {
+            AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
+            ComponentName thisAppWidget = new ComponentName(context.getPackageName(), CakeWidgetProvider.class.getName());
+            int[] appWidgetIds = appWidgetManager.getAppWidgetIds(thisAppWidget);
+            onUpdate(context, appWidgetManager, appWidgetIds);
             }
-        }
-        return views;
     }
 }

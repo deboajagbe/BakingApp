@@ -35,6 +35,7 @@ public class CakeAdapter extends RecyclerView.Adapter<CakeAdapter.Holder> {
 
     @Override
     public Holder onCreateViewHolder(ViewGroup parent, int viewType) {
+
         View view = mLayoutInflater.inflate(R.layout.list_item_layout, parent, false);
         return new Holder(view);
     }

@@ -11,8 +11,10 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -24,7 +26,6 @@ import com.unicornheight.bakingapp.base.BaseActivity;
 import com.unicornheight.bakingapp.di.components.DaggerCakeComponent;
 import com.unicornheight.bakingapp.di.module.CakeModule;
 import com.unicornheight.bakingapp.modules.details.DetailActivity;
-import com.unicornheight.bakingapp.modules.details.ListItemDetailFragment;
 import com.unicornheight.bakingapp.modules.home.adapter.CakeAdapter;
 import com.unicornheight.bakingapp.mvp.model.Cake;
 import com.unicornheight.bakingapp.mvp.presenter.CakePresenter;
@@ -44,22 +45,15 @@ public class MainActivity extends BaseActivity implements MainView {
     @Bind(R.id.cake_list) protected RecyclerView mCakeList;
     @Inject protected CakePresenter mPresenter;
     private CakeAdapter mCakeAdapter;
-    private boolean mTwoPane;
     @Nullable
     private SimpleIdlingResource mIdlingResource;
+
 
 
     @Override
     protected void onViewReady(Bundle savedInstanceState, Intent intent) {
         super.onViewReady(savedInstanceState, intent);
         getIdlingResource();
-        if (findViewById(R.id.listitem_detail_container) != null) {
-            // The detail container view will be present only in the
-            // large-screen layouts (res/values-w900dp).
-            // If this view is present, then the
-            // activity should be in two-pane mode.
-            mTwoPane = true;
-        }
         initializeList();
         loadCakes();
 
@@ -74,11 +68,33 @@ public class MainActivity extends BaseActivity implements MainView {
     }
 
     private void initializeList() {
+
         mCakeList.setHasFixedSize(true);
-        mCakeList.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
-        mCakeAdapter = new CakeAdapter(getLayoutInflater());
-        mCakeAdapter.setCakeClickListener(mCakeClickListener);
-        mCakeList.setAdapter(mCakeAdapter);
+
+        boolean tabletSize = getResources().getBoolean(R.bool.isTablet);
+        if (tabletSize) {
+            mCakeList.setLayoutManager(new GridLayoutManager(this, numberOfColumns()));
+            mCakeAdapter = new CakeAdapter(getLayoutInflater());
+            mCakeAdapter.setCakeClickListener(mCakeClickListener);
+            mCakeList.setAdapter(mCakeAdapter);
+        } else {
+            mCakeList.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+            mCakeAdapter = new CakeAdapter(getLayoutInflater());
+            mCakeAdapter.setCakeClickListener(mCakeClickListener);
+            mCakeList.setAdapter(mCakeAdapter);
+        }
+
+    }
+
+    private int numberOfColumns() {
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        // You can change this divider to adjust the size of the poster
+        int widthDivider = 800;
+        int width = displayMetrics.widthPixels;
+        int nColumns = width / widthDivider;
+        if (nColumns < 2) return 2;
+        return nColumns;
     }
 
     @Override
@@ -178,15 +194,6 @@ public class MainActivity extends BaseActivity implements MainView {
     private CakeAdapter.OnCakeClickListener mCakeClickListener = new CakeAdapter.OnCakeClickListener() {
         @Override
         public void onClick(View v, Cake cake, int position) {
-            if (mTwoPane) {
-                Bundle arguments = new Bundle();
-                arguments.putSerializable(DetailActivity.CAKE, cake);
-                ListItemDetailFragment fragment = new ListItemDetailFragment();
-                fragment.setArguments(arguments);
-                getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.listitem_detail_container, fragment)
-                        .commit();
-            } else {
                 Intent intent = new Intent(MainActivity.this, DetailActivity.class);
                 intent.putExtra(DetailActivity.CAKE, cake);
 
@@ -196,7 +203,6 @@ public class MainActivity extends BaseActivity implements MainView {
                 } else {
                     startActivity(intent);
                 }
-            }
         }
 
     };

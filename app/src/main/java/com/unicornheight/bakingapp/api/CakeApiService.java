@@ -19,7 +19,3 @@ public interface CakeApiService {
     @GET("/android-baking-app-json")
     Call<List<CakesResponse>>getTheCakes();
 }
-
-
-// http://go.udacity.com/android-baking-app-json
- // filippella/a728a34822a3bc7add98e477a4057b69/raw/310d712e87941f569074a63fedb675d2b611342a/cakes

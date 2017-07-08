@@ -1,11 +1,10 @@
-
-
 package com.unicornheight.bakingapp.modules.details;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
+import android.widget.Toast;
 
 import com.unicornheight.bakingapp.R;
 import com.unicornheight.bakingapp.base.BaseActivity;
@@ -13,6 +12,8 @@ import com.unicornheight.bakingapp.base.BaseActivity;
 public class DetailActivity extends BaseActivity {
 
     public static final String CAKE = "cake";
+    ListItemDetailFragment fragment;
+    public boolean IsFavorite;
 
     @Override
     protected void onViewReady(Bundle savedInstanceState, Intent intent) {
@@ -20,8 +21,6 @@ public class DetailActivity extends BaseActivity {
         showBackArrow();
 
         if (savedInstanceState == null) {
-            // Create the detail player_fragment and add it to the activity
-            // using a player_fragment transaction.
             Bundle arguments = new Bundle();
             Intent parentIntent = getIntent();
 
@@ -29,7 +28,7 @@ public class DetailActivity extends BaseActivity {
                 arguments.putSerializable(DetailActivity.CAKE, parentIntent.getSerializableExtra(DetailActivity.CAKE));
             }
 
-            ListItemDetailFragment fragment = new ListItemDetailFragment();
+            fragment = new ListItemDetailFragment();
             fragment.setArguments(arguments);
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.listitem_detail_container, fragment)
@@ -43,15 +42,53 @@ public class DetailActivity extends BaseActivity {
         return R.layout.activity_detail;
     }
 
+    public void checkResult(boolean ans) {
+        if (ans) {
+            IsFavorite = true;
+        } else {
+            IsFavorite = false;
+        }
+
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_detail, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
                 onBackPressed();
                 return true;
+            case R.id.add_favorite:
+                IsFavorite = !IsFavorite;
+                Toast.makeText(this, "Removed from Favorite", Toast.LENGTH_SHORT).show();
+                invalidateOptionsMenu();
+                return true;
+
+            case R.id.remove_favorite:
+                IsFavorite = !IsFavorite;
+                Toast.makeText(this, "Added as Favorite", Toast.LENGTH_SHORT).show();
+                fragment.addFavorite();
+                invalidateOptionsMenu();
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        if (IsFavorite) {
+            menu.findItem(R.id.remove_favorite).setVisible(false);
+            menu.findItem(R.id.add_favorite).setVisible(true);
+        } else {
+            menu.findItem(R.id.remove_favorite).setVisible(true);
+            menu.findItem(R.id.add_favorite).setVisible(false);
+        }
+        return super.onPrepareOptionsMenu(menu);
+    }
 
 }

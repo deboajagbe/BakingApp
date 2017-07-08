@@ -1,8 +1,11 @@
 
 
 package com.unicornheight.bakingapp.mvp.presenter;
+
+import android.content.Context;
 import android.util.Log;
 
+import com.unicornheight.bakingapp.R;
 import com.unicornheight.bakingapp.api.CakeApiService;
 import com.unicornheight.bakingapp.base.BasePresenter;
 import com.unicornheight.bakingapp.mapper.CakeMapper;
@@ -26,14 +29,16 @@ public class CakePresenter extends BasePresenter<MainView> implements Observer<L
     @Inject protected CakeMapper mCakeMapper;
     @Inject protected Storage mStorage;
     SimpleIdlingResource resource;
+    Context context;
 
     @Inject
-    public CakePresenter() {
+    public CakePresenter(Context mContext) {
+        this.context = mContext;
     }
 
     public void getCakes(SimpleIdlingResource resource) {
         this.resource = resource;
-        getView().onShowDialog("Loading cakes....");
+        getView().onShowDialog(context.getString(R.string.loading));
         if (resource != null) resource.setIdleState(false);
         Observable<List<CakesResponse>> cakesResponseObservable = mApiService.getCakes();
         subscribe(cakesResponseObservable, this);
@@ -44,15 +49,14 @@ public class CakePresenter extends BasePresenter<MainView> implements Observer<L
     public void onCompleted() {
         getView().onHideDialog();
         if (resource != null) resource.setIdleState(true);
-        getView().onShowToast("Cakes loading complete!");
+        getView().onShowToast(context.getString(R.string.load_completed));
 
     }
 
     @Override
     public void onError(Throwable e) {
         getView().onHideDialog();
-        getView().onShowToast("Error loading cakes " + e.getMessage());
-        Log.v("ERROR REC", e.getMessage().toString() );
+        getView().onShowToast(context.getString(R.string.error) + e.getMessage());
     }
 
     @Override

@@ -7,4 +7,12 @@
     <string name="appwidget_text">Baking App</string>
     <string name="add_widget">Add widget</string>
     <string name="empty_view_text">empty</string>
+    <string name="star">Stars</string>
+    <string name="load_completed">Cakes loading complete!</string>
+    <string name="loading">Loading cakes....</string>
+    <string name="error">Error loading cakes </string>
+    <string name="pref_name">cake</string>
+    <string name="pref_key">cakeKey</string>
+    <string name="pref_ingredient">cakeIngredient</string>
+    <string name="pref_all">setAll</string>
 </resources>

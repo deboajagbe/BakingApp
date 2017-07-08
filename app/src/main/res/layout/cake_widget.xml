@@ -3,9 +3,14 @@
     android:id="@+id/card_view"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:orientation="horizontal">
 
-    <ImageView
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <ImageView
         android:id="@+id/widget_image"
         android:layout_width="@dimen/imageFit"
         android:layout_height="@dimen/imageFit"
@@ -22,5 +27,16 @@
         android:textSize="14sp"
         tools:text="Sample This"
         android:textStyle="bold" />
+
+    </LinearLayout>
+
+    <TextView
+        android:textSize="10sp"
+        tools:text="Sample This"
+        android:padding="@dimen/paddingList"
+        android:id="@+id/widget_ingredient"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
 
 </LinearLayout>

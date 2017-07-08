@@ -13,10 +13,10 @@
 
         <TextView
             android:id="@+id/header"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="@dimen/fab_margin"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingLeft="10dp"
+            android:paddingLeft="@dimen/title_top"
             android:textStyle="bold"
             android:textSize="20sp"
             android:text="Ingredients Lists : "/>
@@ -27,10 +27,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/titleText"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
-            android:layout_marginTop="4dp"
-            android:layout_marginBottom="4dp"
+            android:layout_marginLeft="@dimen/fab_margin"
+            android:layout_marginRight="@dimen/fab_margin"
+            android:layout_marginTop="@dimen/edge_large"
+            android:layout_marginBottom="@dimen/edge_large"
             android:textSize="14sp"
             tools:text ="salt (1.5 TSP)"/>
 
@@ -40,7 +40,7 @@
             android:layout_marginTop="4dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingLeft="10dp"
+            android:paddingLeft="@dimen/title_top"
             android:textStyle="bold"
             android:textSize="20sp"
             android:text="Steps : "/>
@@ -51,7 +51,7 @@
             android:layout_height="match_parent"
             android:background="@color/priLight"
             android:elevation="@dimen/elevate"
-            android:layout_margin ="4dp" />
+            android:layout_margin="@dimen/edge_large" />
 
 
     </LinearLayout>

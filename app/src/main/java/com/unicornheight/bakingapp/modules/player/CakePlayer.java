@@ -18,8 +18,6 @@ public class CakePlayer extends BaseActivity {
         showBackArrow();
 
         if (savedInstanceState == null) {
-            // Create the detail player_fragment and add it to the activity
-            // using a player_fragment transaction.
             Bundle arguments = new Bundle();
             Intent parentIntent = getIntent();
             fragment = new PlayerFragment();
@@ -51,9 +49,34 @@ public class CakePlayer extends BaseActivity {
         return super.onOptionsItemSelected(item);
     }
 
+
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
+    protected void onStart() {
+        super.onStart();
+        if (fragment.mExoPlayer == null) {
+            fragment.initializePlayer();
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (fragment.mExoPlayer == null) {
+            fragment.initializePlayer();
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (fragment.mExoPlayer != null) {
+            releasePlayer();
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
         if (fragment.mExoPlayer != null) {
             releasePlayer();
         }
