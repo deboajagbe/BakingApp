@@ -130,7 +130,8 @@ public class ListItemDetailFragment extends Fragment {
     private StepAdapter.OnCakeClickListener mCakeClickListener = new StepAdapter.OnCakeClickListener() {
         @Override
         public void onClick(View v, CakesResponseSteps cake, int position) {
-            if (mTwoPane) {
+            boolean tabletSize = getResources().getBoolean(R.bool.isTablet);
+            if (tabletSize) {
                 Bundle arguments = new Bundle();
                 arguments.putSerializable(CakePlayer.CAKE, cake);
                 PlayerFragment fragment = new PlayerFragment();

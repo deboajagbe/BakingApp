@@ -73,7 +73,7 @@ public class PlayerFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.player_fragment, container, false);
         ButterKnife.bind(this, rootView);
         mDetails.setText(cakeDetail);
-
+        initializePlayer();
         return rootView;
     }
 
@@ -104,7 +104,7 @@ public class PlayerFragment extends Fragment {
                         getContext(), userAgent), new DefaultExtractorsFactory(), null, null);
                 mExoPlayer.prepare(mediaSource);
                 mExoPlayer.seekTo(0);
-                mExoPlayer.setPlayWhenReady(true);
+                mExoPlayer.setPlayWhenReady(false);
             }
         }
     }
