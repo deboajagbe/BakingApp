@@ -6,17 +6,17 @@
     android:orientation="horizontal">
 
     <LinearLayout
-        android:orientation="vertical"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
         <ImageView
         android:id="@+id/widget_image"
         android:layout_width="@dimen/imageFit"
         android:layout_height="@dimen/imageFit"
         android:background="@color/white"
-        android:scaleType="fitXY"
-        android:padding="@dimen/paddingList" />
+            android:padding="@dimen/paddingList"
+            android:scaleType="fitXY" />
 
 
     <TextView
@@ -25,18 +25,18 @@
         android:layout_height="wrap_content"
         android:padding="@dimen/paddingList"
         android:textSize="14sp"
-        tools:text="Sample This"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        tools:text="Sample This" />
 
     </LinearLayout>
 
     <TextView
-        android:textSize="10sp"
-        tools:text="Sample This"
-        android:padding="@dimen/paddingList"
         android:id="@+id/widget_ingredient"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:padding="@dimen/paddingList"
+        android:textSize="14sp"
+        tools:text="Sample This" />
 
 
 </LinearLayout>

@@ -32,12 +32,13 @@ import butterknife.ButterKnife;
 public class ListItemDetailFragment extends Fragment {
 
 
-    private StepAdapter mStepAdapter;
     @Bind(R.id.cakeTitle)
     protected TextView mCakeTitle;
     @Bind(R.id.step_list)
     protected RecyclerView mStepList;
     Cake cake;
+    SharedPreferences.Editor editor;
+    private StepAdapter mStepAdapter;
     private int cake_id;
     private String cakeName;
     private String image_url;
@@ -45,13 +46,29 @@ public class ListItemDetailFragment extends Fragment {
     private List<CakesResponseSteps> steps;
     private boolean mTwoPane;
     private SharedPreferences sharedPreferences;
-    SharedPreferences.Editor editor;
     private String setWidgetIngredient;
+    private StepAdapter.OnCakeClickListener mCakeClickListener = new StepAdapter.OnCakeClickListener() {
+        @Override
+        public void onClick(View v, CakesResponseSteps cake, int position) {
+            if (mTwoPane) {
+                Bundle arguments = new Bundle();
+                arguments.putSerializable(CakePlayer.CAKE, cake);
+                PlayerFragment fragment = new PlayerFragment();
+                fragment.setArguments(arguments);
+                getActivity().getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.player_container, fragment)
+                        .commit();
+            } else {
+                Intent intent = new Intent(getContext(), CakePlayer.class);
+                intent.putExtra(CakePlayer.CAKE, cake);
+                startActivity(intent);
+            }
+        }
+    };
 
 
     public ListItemDetailFragment() {
     }
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -76,7 +93,8 @@ public class ListItemDetailFragment extends Fragment {
         ButterKnife.bind(this, rootView);
         initializeList();
         checkFavorite();
-        if (rootView.findViewById(R.id.player_container) != null) {
+        boolean tabletSize = getResources().getBoolean(R.bool.isTablet);
+        if (tabletSize) {
             mTwoPane = true;
         }
 
@@ -92,7 +110,6 @@ public class ListItemDetailFragment extends Fragment {
         mStepAdapter.addCakes(steps);
         return rootView;
     }
-
 
     private void initializeList() {
         mStepList.setHasFixedSize(true);
@@ -126,25 +143,5 @@ public class ListItemDetailFragment extends Fragment {
             addFavorite();
         }
     }
-
-    private StepAdapter.OnCakeClickListener mCakeClickListener = new StepAdapter.OnCakeClickListener() {
-        @Override
-        public void onClick(View v, CakesResponseSteps cake, int position) {
-            boolean tabletSize = getResources().getBoolean(R.bool.isTablet);
-            if (tabletSize) {
-                Bundle arguments = new Bundle();
-                arguments.putSerializable(CakePlayer.CAKE, cake);
-                PlayerFragment fragment = new PlayerFragment();
-                fragment.setArguments(arguments);
-                getActivity().getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.player_container, fragment)
-                        .commit();
-            } else {
-                Intent intent = new Intent(getContext(), CakePlayer.class);
-                intent.putExtra(CakePlayer.CAKE, cake);
-                startActivity(intent);
-            }
-        }
-    };
 
 }

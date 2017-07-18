@@ -50,11 +50,9 @@ public class CakeList {
     }
 
     @Test
-    public void loadCake() {
+    public void checkClick() {
 
-        // Click on refresh button
-        onView(withId(R.id.action_reload))
-                .perform(click());
+        onView(withId(R.id.cake_list)).check(matches(isDisplayed()));
 
         // Check if successful sync message displayed
         onView(withText("Cakes loading complete!")).
@@ -63,7 +61,7 @@ public class CakeList {
     }
 
     @Test
-    public void checkClick() {
+    public void loadCake() {
 
         onView(withId(R.id.cake_list))
                 .perform(RecyclerViewActions.actionOnItemAtPosition(1, click()));

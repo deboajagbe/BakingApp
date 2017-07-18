@@ -48,43 +48,4 @@ public class CakePlayer extends BaseActivity {
         }
         return super.onOptionsItemSelected(item);
     }
-
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        if (fragment.mExoPlayer == null) {
-            fragment.initializePlayer();
-        }
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if (fragment.mExoPlayer == null) {
-            fragment.initializePlayer();
-        }
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        if (fragment.mExoPlayer != null) {
-            releasePlayer();
-        }
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        if (fragment.mExoPlayer != null) {
-            releasePlayer();
-        }
-    }
-
-    public void releasePlayer() {
-        fragment.mExoPlayer.stop();
-        fragment.mExoPlayer.release();
-        fragment.mExoPlayer = null;
-    }
 }

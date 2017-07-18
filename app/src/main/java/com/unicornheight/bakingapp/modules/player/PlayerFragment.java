@@ -1,10 +1,10 @@
 package com.unicornheight.bakingapp.modules.player;
 
 
-import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,7 +26,6 @@ import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 import com.unicornheight.bakingapp.R;
-import com.unicornheight.bakingapp.helper.ImageHandler;
 import com.unicornheight.bakingapp.mvp.model.CakesResponseSteps;
 
 import butterknife.Bind;
@@ -38,6 +37,10 @@ import butterknife.ButterKnife;
 
 public class PlayerFragment extends Fragment {
 
+    public SimpleExoPlayer mExoPlayer;
+    public long playbackPosition;
+    public int currentWindow;
+    public boolean playWhenReady;
     @Bind(R.id.playerView) SimpleExoPlayerView mPlayerView;
     @Bind(R.id.full_detail) TextView mDetails;
     @Bind(R.id.image_temp) ImageView mImageView;
@@ -45,8 +48,6 @@ public class PlayerFragment extends Fragment {
     private String cakeVideoUrl;
     private String cakeDetail;
     private String thumbUrl;
-    public SimpleExoPlayer mExoPlayer;
-
 
     public PlayerFragment() {
 
@@ -73,16 +74,15 @@ public class PlayerFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.player_fragment, container, false);
         ButterKnife.bind(this, rootView);
         mDetails.setText(cakeDetail);
-        initializePlayer();
         return rootView;
     }
 
     public void initializePlayer() {
         Uri mediaUri = null;
-        if (cakeVideoUrl != null && !cakeVideoUrl.equals("") && !cakeVideoUrl.isEmpty()) {
+        if (!TextUtils.isEmpty(cakeVideoUrl)) {
             mPlayerView.setVisibility(View.VISIBLE);
             mediaUri = Uri.parse(cakeVideoUrl);
-        }else if(thumbUrl != null && !thumbUrl.equals("") && !thumbUrl.isEmpty()){
+        } else if (!TextUtils.isEmpty(thumbUrl)) {
             Glide.with(getActivity()).load(thumbUrl)
                     .asBitmap()
                     .thumbnail(0.5f)
@@ -103,10 +103,52 @@ public class PlayerFragment extends Fragment {
                 MediaSource mediaSource = new ExtractorMediaSource(mediaUri, new DefaultDataSourceFactory(
                         getContext(), userAgent), new DefaultExtractorsFactory(), null, null);
                 mExoPlayer.prepare(mediaSource);
-                mExoPlayer.seekTo(0);
+                mExoPlayer.seekTo(currentWindow, playbackPosition);
                 mExoPlayer.setPlayWhenReady(false);
             }
         }
     }
 
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        if (mExoPlayer == null) {
+            initializePlayer();
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (mExoPlayer == null) {
+            initializePlayer();
+        }
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (mExoPlayer != null) {
+            releasePlayer();
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (mExoPlayer != null) {
+            releasePlayer();
+        }
+    }
+
+    public void releasePlayer() {
+        if (mExoPlayer != null) {
+            playbackPosition = mExoPlayer.getCurrentPosition();
+            currentWindow = mExoPlayer.getCurrentWindowIndex();
+            playWhenReady = mExoPlayer.getPlayWhenReady();
+            mExoPlayer.release();
+            mExoPlayer = null;
+        }
+    }
 }
